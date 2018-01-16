@@ -77,23 +77,42 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.username.center.x = -self.view.center.x
-        self.password.center.x = -self.view.center.x
-        self.loginButton.center.x = -self.view.center.x
-
+        [username, password, loginButton].forEach({ $0.center.x = -view.center.x })
+        [cloud1, cloud2, cloud3, cloud4].forEach({ $0?.alpha = 0 })
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         runAnimation()
+        runCloudAnimation()
+    }
+    
+    private func runCloudAnimation() {
+        
+        UIView.animate(withDuration: 0.5, delay: 0.5, options: .curveEaseInOut, animations: {
+            self.cloud1.alpha = 1.0
+        }, completion: nil)
+        
+        UIView.animate(withDuration: 0.5, delay: 0.7, options: .curveEaseInOut, animations: {
+            self.cloud2.alpha = 1.0
+        }, completion: nil)
+        
+        UIView.animate(withDuration: 0.5, delay: 0.9, options: .curveEaseInOut, animations: {
+            self.cloud3.alpha = 1.0
+        }, completion: nil)
+        
+        UIView.animate(withDuration: 0.5, delay: 1.1, options: .curveEaseInOut, animations: {
+            self.cloud4.alpha = 1.0
+        }, completion: nil)
+        
     }
     
     private func runAnimation() {
-        UIView.animate(withDuration: 0.5, delay: 0, options: [.repeat, .autoreverse], animations: {
+        UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
             self.username.center.x = self.view.center.x
         }, completion: nil)
         
-        UIView.animate(withDuration: 0.5, delay: 0.3, options: .repeat, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
             self.password.center.x = self.view.center.x
         }, completion: nil)
         
