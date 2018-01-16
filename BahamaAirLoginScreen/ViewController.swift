@@ -89,11 +89,11 @@ class ViewController: UIViewController {
     }
     
     private func runAnimation() {
-        UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
+        UIView.animate(withDuration: 0.5, delay: 0, options: [.repeat, .autoreverse], animations: {
             self.username.center.x = self.view.center.x
         }, completion: nil)
         
-        UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.3, options: .repeat, animations: {
             self.password.center.x = self.view.center.x
         }, completion: nil)
         
