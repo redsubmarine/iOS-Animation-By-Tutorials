@@ -23,6 +23,10 @@
 import UIKit
 import QuartzCore
 
+enum AnimationDirection: Int {
+    case positive = 1
+    case negative = -1
+}
 // A delay function
 func delay(seconds: Double, completion: @escaping ()-> Void) {
     DispatchQueue.main.asyncAfter(deadline: .now() + seconds, execute: completion)
@@ -72,18 +76,20 @@ class ViewController: UIViewController {
         
         // populate the UI with the next flight's data
         summary.text = data.summary
-        flightNr.text = data.flightNr
-        gateNr.text = data.gateNr
-        departingFrom.text = data.departingFrom
-        arrivingTo.text = data.arrivingTo
-        flightStatus.text = data.flightStatus
 
-        
         if animated {
             fade(imageView: bgImageView, to: UIImage(named: data.weatherImageName)!, showEffect: data.showWeatherEffects)
+            let direction: AnimationDirection = data.isTakingOff ? .positive : .negative
+            cubeTransition(label: flightNr, text: data.flightNr, direction: direction)
+            cubeTransition(label: gateNr, text: data.gateNr, direction: direction)
         } else {
             bgImageView.image = UIImage(named: data.weatherImageName)
             snowView.isHidden = !data.showWeatherEffects
+            flightNr.text = data.flightNr
+            gateNr.text = data.gateNr
+            departingFrom.text = data.departingFrom
+            arrivingTo.text = data.arrivingTo
+            flightStatus.text = data.flightStatus
         }
         
         // schedule next flight
@@ -93,12 +99,34 @@ class ViewController: UIViewController {
     }
     
     private func fade(imageView: UIImageView, to image: UIImage, showEffect: Bool) {
-        UIView.transition(with: imageView, duration: 1.0, options: [.transitionFlipFromLeft], animations: {
+        UIView.transition(with: imageView, duration: 1.0, options: [.transitionCrossDissolve], animations: {
             imageView.image = image
         })
         
         UIView.animate(withDuration: 1.0, delay: 0.0, options: [.curveEaseOut], animations: {
             self.snowView.alpha = showEffect ? 1.0 : 0.0
+        })
+    }
+
+    private func cubeTransition(label: UILabel, text: String, direction: AnimationDirection) {
+        let auxLabel = UILabel(frame: label.frame)
+        auxLabel.text = text
+        auxLabel.font = label.font
+        auxLabel.textColor = label.textColor
+        auxLabel.textAlignment = label.textAlignment
+        auxLabel.backgroundColor = label.backgroundColor
+        
+        let auxLabelOffset = CGFloat(direction.rawValue) * label.frame.height / 2.0
+        auxLabel.transform = CGAffineTransform(translationX: 0.0, y: auxLabelOffset).scaledBy(x: 1.0, y: 0.1)
+        label.superview?.addSubview(auxLabel)
+        
+        UIView.animate(withDuration: 0.5, delay: 0.0, options: [.curveEaseOut], animations: {
+            auxLabel.transform = .identity
+            label.transform = CGAffineTransform(translationX: 0.0, y: -auxLabelOffset).scaledBy(x: 1.0, y: 0.1)
+        }, completion: { _ in
+            label.text = auxLabel.text
+            label.transform = .identity
+            auxLabel.removeFromSuperview()
         })
     }
     
