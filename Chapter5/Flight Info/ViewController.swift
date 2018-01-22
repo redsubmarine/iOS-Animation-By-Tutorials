@@ -77,8 +77,7 @@ class ViewController: UIViewController {
         
         
         // populate the UI with the next flight's data
-        summary.text = data.summary
-        
+
         if animated {
             planeDepart()
             fade(imageView: bgImageView,
@@ -107,6 +106,7 @@ class ViewController: UIViewController {
             departingFrom.text = data.departingFrom
             arrivingTo.text = data.arrivingTo
             flightStatus.text = data.flightStatus
+            summary.text = data.summary
         }
         
         // schedule next flight
@@ -117,16 +117,16 @@ class ViewController: UIViewController {
     
     private func summarySwitch(to text: String) {
         
+
         UIView.animateKeyframes(withDuration: 1.0, delay: 0.0, animations: {
             
             UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.45, animations: {
                 self.summary.center.y -= 100.0
             })
-            
+
             UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.45, animations: {
                 self.summary.center.y += 100.0
             })
-            
         })
         
         delay(seconds: 0.5) {
@@ -137,7 +137,7 @@ class ViewController: UIViewController {
     private func planeDepart() {
         let originalCenter = planeImage.center
         
-        UIView.animateKeyframes(withDuration: 1.5, delay: 0.0, options: [], animations: {
+        UIView.animateKeyframes(withDuration: 1.5, delay: 0.0, options: [.calculationModeCubic], animations: {
             UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.25, animations: {
                 self.planeImage.center.x += 80.0
                 self.planeImage.center.y -= 10.0
