@@ -30,6 +30,8 @@ class ViewController: UIViewController {
     @IBOutlet var buttonMenu: UIButton!
     @IBOutlet var titleLabel: UILabel!
     
+    @IBOutlet weak var menuHeightConstraint: NSLayoutConstraint!
+    
     //MARK: further class variables
     
     var slider: HorizontalItemList!
@@ -40,10 +42,84 @@ class ViewController: UIViewController {
     
     @IBAction func actionToggleMenu(_ sender: AnyObject) {
         
+        titleLabel.superview?.constraints.forEach { constraint in
+            print(" -> \(constraint.description)\n")
+        }
+        
+        isMenuOpen = !isMenuOpen
+        
+        titleLabel.superview?.constraints.forEach { constraint in
+            if constraint.firstItem === titleLabel &&
+                constraint.firstAttribute == .centerX {
+                constraint.constant = isMenuOpen ? -100.0 : 0.0
+                return
+            }
+            if constraint.identifier == "TitleCenterY" {
+                constraint.isActive = false
+                
+                let newConstraint = NSLayoutConstraint(item: titleLabel, attribute: .centerY, relatedBy: .equal, toItem: titleLabel.superview!, attribute: .centerY, multiplier: isMenuOpen ? 0.67 : 1.0, constant: 5.0)
+                newConstraint.identifier = "TitleCenterY"
+                newConstraint.isActive = true
+                return
+            }
+        }
+        
+        menuHeightConstraint.constant = isMenuOpen ? 200.0 : 60.0
+        titleLabel.text = isMenuOpen ? "Select Item" : "Packing List"
+        
+        UIView.animate(withDuration: 1.0, delay: 0.0, usingSpringWithDamping: 0.4, initialSpringVelocity: 10.0, options: .curveEaseIn, animations: {
+            self.view.layoutIfNeeded()
+            let angle: CGFloat = self.isMenuOpen ? .pi / 4 : 0.0
+            self.buttonMenu.transform = CGAffineTransform(rotationAngle: angle)
+            
+        })
+        
+        if isMenuOpen {
+            slider = HorizontalItemList(inView: view)
+            slider.didSelectItem = { index in
+                print("add \(index)")
+                self.items.append(index)
+                self.tableView.reloadData()
+                self.actionToggleMenu(self)
+            }
+            titleLabel.superview!.addSubview(slider)
+        } else {
+            slider.removeFromSuperview()
+        }
     }
     
     func showItem(_ index: Int) {
         print("tapped item \(index)")
+        let imageView = UIImageView(image: UIImage(named: "summericons_100px_0\(index).png"))
+        imageView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        imageView.layer.cornerRadius = 5.0
+        imageView.layer.masksToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageView)
+        
+        let conX = imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        let conBottom = imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: imageView.frame.height)
+        let conWidth = imageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.33, constant: -50.0)
+        let conHeight = imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor)
+        
+        NSLayoutConstraint.activate([conX, conBottom, conWidth, conHeight])
+        
+        view.layoutIfNeeded()
+        UIView.animate(withDuration: 0.8, delay: 0.0, usingSpringWithDamping: 0.4, initialSpringVelocity: 0.0, animations: {
+            conBottom.constant = -imageView.frame.height / 2
+            conWidth.constant = 0
+            self.view.layoutIfNeeded()
+        })
+        
+        UIView.animate(withDuration: 0.8, delay: 1.0, usingSpringWithDamping: 0.4, initialSpringVelocity: 0.0, animations: {
+            conBottom.constant = imageView.frame.height
+            conWidth.constant = -50.0
+            self.view.layoutIfNeeded()
+        }, completion: { finished in
+            if finished {
+                imageView.removeFromSuperview()
+            }
+        })
     }
 }
 
