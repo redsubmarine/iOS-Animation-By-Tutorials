@@ -27,6 +27,25 @@ func delay(seconds: Double, completion: @escaping ()-> Void) {
     DispatchQueue.main.asyncAfter(deadline: .now() + seconds, execute: completion)
 }
 
+func tintBackgroundColor(layer: CALayer, toColor: UIColor) {
+    let background = CABasicAnimation(keyPath: "backgroundColor")
+    background.fromValue = layer.backgroundColor
+    background.toValue = toColor.cgColor
+    background.duration = 1.0
+    layer.add(background, forKey: nil)
+    layer.backgroundColor = toColor.cgColor
+}
+
+func roundCorners(layer: CALayer, toRadius: CGFloat) {
+    let corner = CABasicAnimation(keyPath: "cornerRadius")
+    corner.fromValue = layer.cornerRadius
+    corner.toValue = toRadius
+    corner.duration = 1.0
+    layer.add(corner, forKey: nil)
+    layer.cornerRadius = toRadius
+
+}
+
 class ViewController: UIViewController {
     
     // MARK: IB outlets
@@ -80,70 +99,44 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        heading.center.x  -= view.bounds.width
-        username.center.x -= view.bounds.width
-        password.center.x -= view.bounds.width
-        
-        cloud1.alpha = 0.0
-        cloud2.alpha = 0.0
-        cloud3.alpha = 0.0
-        cloud4.alpha = 0.0
-        
+        animateLayers()
+
         loginButton.center.y += 30.0
         loginButton.alpha = 0.0
+
+    }
+    
+    private func animateCloudsAlpha() {
+        let fadeIn = CABasicAnimation(keyPath: "opacity")
+        fadeIn.isRemovedOnCompletion = false
+        fadeIn.fromValue = 0.0
+        fadeIn.toValue = 1.0
+        fadeIn.duration = 0.5
+        [cloud1, cloud2, cloud3, cloud4].enumerated().forEach({ index, view in
+            fadeIn.fillMode = kCAFillModeBackwards
+            fadeIn.beginTime = CACurrentMediaTime() + 0.2 * Double(index) + 0.5
+            view!.layer.add(fadeIn, forKey: nil)
+        })
+        
+    }
+    
+    private func animateLayers() {
+        let flyRight = CABasicAnimation(keyPath: "position.x")
+        flyRight.fillMode = kCAFillModeBoth
+        flyRight.isRemovedOnCompletion = false
+        flyRight.fromValue = -view.bounds.width / 2
+        flyRight.toValue = view.bounds.width / 2
+        flyRight.duration = 0.5
+        heading.layer.add(flyRight, forKey: nil)
+        flyRight.beginTime = CACurrentMediaTime() + 0.3
+        username.layer.add(flyRight, forKey: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        UIView.animate(withDuration: 0.5) {
-            self.heading.center.x += self.view.bounds.width
-        }
-        
-        UIView.animate(withDuration: 0.5, delay: 0.3, usingSpringWithDamping: 0.6,
-                       initialSpringVelocity: 0.0,
-                       animations: {
-                        self.username.center.x += self.view.bounds.width
-        },
-                       completion: nil
-        )
-        
-        UIView.animate(withDuration: 0.5, delay: 0.4, usingSpringWithDamping: 0.6,
-                       initialSpringVelocity: 0.0,
-                       animations: {
-                        self.password.center.x += self.view.bounds.width
-        },
-                       completion: nil
-        )
-        
-        UIView.animate(withDuration: 0.5, delay: 0.5,
-                       animations: {
-                        self.cloud1.alpha = 1.0
-        },
-                       completion: nil
-        )
-        
-        UIView.animate(withDuration: 0.5, delay: 0.7,
-                       animations: {
-                        self.cloud2.alpha = 1.0
-        },
-                       completion: nil
-        )
-        
-        UIView.animate(withDuration: 0.5, delay: 0.9,
-                       animations: {
-                        self.cloud3.alpha = 1.0
-        },
-                       completion: nil
-        )
-        
-        UIView.animate(withDuration: 0.5, delay: 1.1,
-                       animations: {
-                        self.cloud4.alpha = 1.0
-        },
-                       completion: nil
-        )
-        
+        animateCloudsAlpha()
+
         UIView.animate(withDuration: 0.5, delay: 0.5, usingSpringWithDamping: 0.5,
                        initialSpringVelocity: 0.0,
                        animations: {
@@ -202,19 +195,21 @@ class ViewController: UIViewController {
                             self.status.isHidden = true
                             self.status.center = self.statusPosition
         },
-                          completion: nil
-        )
+                          completion: { _ in
+                            let tintColor = UIColor(red: 0.63, green: 0.84, blue: 0.35, alpha: 1.0)
+                            tintBackgroundColor(layer: self.loginButton.layer, toColor: tintColor)
+                            
+                            roundCorners(layer: self.loginButton.layer, toRadius: 8.0)
+        })
         
         UIView.animate(withDuration: 0.2, delay: 0.0,
                        animations: {
                         self.spinner.center = CGPoint(x: -20.0, y: 16.0)
                         self.spinner.alpha = 0.0
-                        self.loginButton.backgroundColor = UIColor(red: 0.63, green: 0.84, blue: 0.35, alpha: 1.0)
                         self.loginButton.bounds.size.width -= 80.0
                         self.loginButton.center.y -= 60.0
         },
-                       completion: nil
-        )
+                       completion: nil)
     }
     
     // MARK: further methods
@@ -236,12 +231,16 @@ class ViewController: UIViewController {
                        initialSpringVelocity: 0.0,
                        animations: {
                         self.loginButton.center.y += 60.0
-                        self.loginButton.backgroundColor = UIColor(red: 0.85, green: 0.83, blue: 0.45, alpha: 1.0)
                         self.spinner.center = CGPoint(x: 40.0, y: self.loginButton.frame.size.height/2)
                         self.spinner.alpha = 1.0
         },
                        completion: nil
         )
+        
+        let tintColor = UIColor(red: 0.85, green: 0.83, blue: 0.45, alpha: 1.0)
+        tintBackgroundColor(layer: loginButton.layer, toColor: tintColor)
+        
+        roundCorners(layer: loginButton.layer, toRadius: 25.0)
     }
     
     func animateCloud(_ cloud: UIImageView) {
