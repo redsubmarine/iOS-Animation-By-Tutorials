@@ -108,27 +108,30 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let flyRight = CABasicAnimation(keyPath: "position.x")
-        flyRight.fromValue = -view.bounds.size.width/2
-        flyRight.toValue = view.bounds.size.width/2
-        flyRight.duration = 0.5
-        flyRight.delegate = self
-        flyRight.setValue("form", forKey: "name")
-        flyRight.setValue(heading.layer, forKey: "layer")
-        heading.layer.add(flyRight, forKey: nil)
+        let animationGroup = CAAnimationGroup()
+        animationGroup.duration = 0.5
+        animationGroup.delegate = self
+        animationGroup.fillMode = kCAFillModeBackwards
+        animationGroup.setValue("form", forKey: "name")
         
-        flyRight.beginTime = CACurrentMediaTime() + 0.3
-        flyRight.fillMode = kCAFillModeBoth
-        flyRight.setValue(username.layer, forKey: "layer")
-        username.layer.add(flyRight, forKey: nil)
+        let fade = CABasicAnimation(keyPath: "opacity")
+        fade.fromValue = 0.25
+        fade.toValue = 1.0
         
-        flyRight.beginTime = CACurrentMediaTime() + 0.4
-        flyRight.setValue(password.layer, forKey: "layer")
-        password.layer.add(flyRight, forKey: nil)
+        let position = CABasicAnimation(keyPath: "position.x")
+        position.fromValue = -view.bounds.width / 2
+        position.toValue = view.bounds.width / 2
         
-        username.layer.position.x = view.bounds.size.width/2
-        password.layer.position.x = view.bounds.size.width/2
+        animationGroup.animations = [fade, position]
         
+        animationGroup.setValue(heading.layer, forKey: "layer")
+        heading.layer.add(animationGroup, forKey: nil)
+        animationGroup.beginTime = CACurrentMediaTime() + 0.3
+        animationGroup.setValue(username.layer, forKey: "layer")
+        username.layer.add(animationGroup, forKey: nil)
+        animationGroup.beginTime = CACurrentMediaTime() + 0.4
+        animationGroup.setValue(password.layer, forKey: "layer")
+        password.layer.add(animationGroup, forKey: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
