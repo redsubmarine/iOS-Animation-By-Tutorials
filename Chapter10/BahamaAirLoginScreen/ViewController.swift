@@ -169,6 +169,7 @@ class ViewController: UIViewController {
         fade.toValue = 1.0
         
         groupAnimation.animations = [scaleDown, rotate, fade]
+        groupAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
         loginButton.layer.add(groupAnimation, forKey: nil)
         
         animateCloud(layer: cloud1.layer)
@@ -180,7 +181,13 @@ class ViewController: UIViewController {
         flyLeft.fromValue = info.layer.position.x + view.frame.size.width
         flyLeft.toValue = info.layer.position.x
         flyLeft.duration = 5.0
+//        flyLeft.repeatCount = 2.5
+//        flyLeft.autoreverses = true
+//        flyLeft.speed = 2.0
+//        info.layer.speed = 2.0
+//        view.layer.speed = 2.0
         info.layer.add(flyLeft, forKey: "infoappear")
+        
         
         let fadeLabelIn = CABasicAnimation(keyPath: "opacity")
         fadeLabelIn.fromValue = 0.2
