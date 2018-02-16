@@ -329,10 +329,13 @@ extension ViewController: CAAnimationDelegate {
             let layer = anim.value(forKey: "layer") as? CALayer
             anim.setValue(nil, forKey: "layer")
             
-            let pulse = CABasicAnimation(keyPath: "transform.scale")
+            let pulse = CASpringAnimation(keyPath: "transform.scale")
+            pulse.damping = 7.5
+            
             pulse.fromValue = 1.25
             pulse.toValue = 1.0
-            pulse.duration = 0.25
+//            pulse.duration = 0.25
+            pulse.duration = pulse.settlingDuration
             layer?.add(pulse, forKey: nil)
         }
         
@@ -346,7 +349,7 @@ extension ViewController: CAAnimationDelegate {
                 }
             }
         }
-        
+
     }
 }
 
@@ -357,5 +360,34 @@ extension ViewController: UITextFieldDelegate {
         }
         print(runningAnimations)
         info.layer.removeAnimation(forKey: "infoappear")
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let text = textField.text else { return }
+        
+        if text.count < 5 {
+            textField.layer.cornerRadius = 5
+            textField.layer.borderWidth = 3.0
+            textField.layer.borderColor = UIColor.clear.cgColor
+            
+            let flash = CASpringAnimation(keyPath: "borderColor")
+            flash.damping = 7
+            flash.stiffness = 200.0
+            flash.fromValue = UIColor(red: 1, green: 0.27, blue: 0, alpha: 1.0).cgColor
+            flash.toValue = UIColor.white.cgColor
+            flash.duration = flash.settlingDuration
+            textField.layer.add(flash, forKey: nil)
+
+            let jump = CASpringAnimation(keyPath: "position.y")
+            jump.initialVelocity = 100
+            jump.mass = 10.0
+            jump.stiffness = 1500.0
+            jump.damping = 50.0
+            
+            jump.fromValue = textField.layer.position.y + 1.0
+            jump.toValue = textField.layer.position.y
+            jump.duration = jump.settlingDuration
+            textField.layer.add(jump, forKey: nil)
+        }
     }
 }
