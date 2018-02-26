@@ -255,9 +255,14 @@ class ViewController: UIViewController {
                         self.spinner.alpha = 0.0
                         self.loginButton.bounds.size.width -= 80.0
                         self.loginButton.center.y -= 60.0
-        },
-                       completion: nil
-        )
+        })
+        
+        let wobble = CAKeyframeAnimation(keyPath: "transform.rotation")
+        wobble.duration = 0.25
+        wobble.repeatCount = 4
+        wobble.values = [0.0, -.pi / 4.0, 0.0, .pi / 4.0, 0.0]
+        wobble.keyTimes = [0.0, 0.25, 0.5, 0.75, 1.0]
+        heading.layer.add(wobble, forKey: nil)
     }
     
     // MARK: further methods
@@ -288,6 +293,23 @@ class ViewController: UIViewController {
         let tintColor = UIColor(red: 0.85, green: 0.83, blue: 0.45, alpha: 1.0)
         tintBackgroundColor(layer: loginButton.layer, toColor: tintColor)
         roundCorners(layer: loginButton.layer, toRadius: 25.0)
+        
+        let balloon = CALayer()
+        balloon.contents = UIImage(named: "balloon")!.cgImage
+        balloon.frame = CGRect(x: -50, y: 0, width: 50, height: 65)
+        view.layer.insertSublayer(balloon, below: username.layer)
+        
+        let flight = CAKeyframeAnimation(keyPath: "position")
+        flight.duration = 12.0
+        
+        flight.values = [
+            CGPoint(x: -50, y: 0),
+            CGPoint(x: view.frame.width + 50, y: 160),
+            CGPoint(x: -50, y: loginButton.center.y),
+        ]
+        flight.keyTimes = [0, 0.5, 1.0]
+        balloon.add(flight, forKey: nil)
+        balloon.position = CGPoint(x: -50, y: loginButton.center.y)
     }
     
     func animateCloud(layer: CALayer) {
