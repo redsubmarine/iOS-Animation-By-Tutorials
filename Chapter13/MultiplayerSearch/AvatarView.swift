@@ -30,6 +30,8 @@ class AvatarView: UIView {
     let lineWidth: CGFloat = 6.0
     let animationDuration = 1.0
     
+    var isSquare = false
+    
     //ui
     let photoLayer = CALayer()
     let circleLayer = CAShapeLayer()
@@ -100,14 +102,18 @@ class AvatarView: UIView {
         UIView.animate(withDuration: animationDuration, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.0, animations: {
             self.center = point
         }, completion: { _ in
-            
+            if self.shouldTransitionToFinishedState {
+                self.animateToSquare()
+            }
         })
         
         UIView.animate(withDuration: animationDuration, delay: animationDuration, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, animations: {
             self.center = originalCenter
         }, completion: { _ in
-            delay(seconds: 0.1) {
-                self.bounceOff(point: point, morphSize: morphSize)
+            if !self.isSquare {
+                delay(seconds: 0.1) {
+                    self.bounceOff(point: point, morphSize: morphSize)
+                }
             }
         })
         
@@ -121,6 +127,20 @@ class AvatarView: UIView {
         morphAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)
         circleLayer.add(morphAnimation, forKey: nil)
         maskLayer.add(morphAnimation, forKey: nil)
+    }
+    
+    private func animateToSquare() {
+        isSquare = true
+        let squarePath = UIBezierPath(rect: bounds).cgPath
+        let animation = CABasicAnimation(keyPath: "path")
+        animation.duration = 0.25
+        animation.fromValue = circleLayer.path
+        animation.toValue = squarePath
+        circleLayer.path = squarePath
+        circleLayer.add(animation, forKey: nil)
+        
+        maskLayer.path = squarePath
+        maskLayer.add(animation, forKey: nil)
     }
     
 }
