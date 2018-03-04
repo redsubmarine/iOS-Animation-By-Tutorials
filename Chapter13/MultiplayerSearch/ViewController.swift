@@ -38,6 +38,19 @@ class ViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        searchForOpponent()
+    }
+    
+    private func searchForOpponent() {
+        let avatarSize = myAvatar.frame.size
+        let bounceXOffset = avatarSize.width / 1.9
+        let morphSize = CGSize(width: avatarSize.width * 0.85, height: avatarSize.height * 1.1)
+        
+        let rightBouncePoint = CGPoint(x: view.frame.width / 2 + bounceXOffset, y: myAvatar.center.y)
+        let leftBouncePoint = CGPoint(x: view.frame.width / 2 - bounceXOffset, y: myAvatar.center.y)
+        
+        myAvatar.bounceOff(point: rightBouncePoint, morphSize: morphSize)
+        opponentAvatar.bounceOff(point: leftBouncePoint, morphSize: morphSize)
         
     }
     
