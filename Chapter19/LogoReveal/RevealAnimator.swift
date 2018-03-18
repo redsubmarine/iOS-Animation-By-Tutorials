@@ -22,10 +22,12 @@
 
 import UIKit
 
-class RevealAnimator: NSObject, UIViewControllerAnimatedTransitioning, CAAnimationDelegate {
+class RevealAnimator: UIPercentDrivenInteractiveTransition, UIViewControllerAnimatedTransitioning, CAAnimationDelegate {
     
+    var interactive = false
     let animationDuration = 2.0
     var operation: UINavigationControllerOperation = .push
+    private var pausedTime: CFTimeInterval = 0
     
     weak var storedContext: UIViewControllerContextTransitioning?
     
@@ -33,7 +35,57 @@ class RevealAnimator: NSObject, UIViewControllerAnimatedTransitioning, CAAnimati
         return animationDuration
     }
     
+    func handlePan(_ recognizer: UIPanGestureRecognizer) {
+        let translation = recognizer.translation(in: recognizer.view!.superview)
+        var progress: CGFloat = abs(translation.x / 200.0)
+        progress = min(max(progress, 0.01), 0.99)
+        
+        switch recognizer.state {
+        case .changed:
+            update(progress)
+        case .cancelled, .ended:
+            if progress < 0.5 {
+                cancel()
+            } else {
+                finish()
+            }
+            interactive = false
+        default:
+            break
+        }
+    }
+    
+    override func cancel() {
+        restart(forFinishing: false)
+        super.cancel()
+    }
+    
+    override func finish() {
+        restart(forFinishing: true)
+        super.finish()
+    }
+    
+    private func restart(forFinishing: Bool) {
+        
+        let transitionLayer = storedContext?.containerView.layer
+        transitionLayer?.beginTime = CACurrentMediaTime()
+        transitionLayer?.speed = forFinishing ? 1 : -1
+    }
+    
+    override func update(_ percentComplete: CGFloat) {
+        super.update(percentComplete)
+        let animationProgress = TimeInterval(animationDuration) * TimeInterval(percentComplete)
+        storedContext?.containerView.layer.timeOffset = pausedTime + animationProgress
+    }
+    
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+        if interactive {
+            let transitionLayer = transitionContext.containerView.layer
+            pausedTime = transitionLayer.convertTime(CACurrentMediaTime(), from: nil)
+            transitionLayer.speed = 0
+            transitionLayer.timeOffset = pausedTime
+        }
+        
         storedContext = transitionContext
         
         if operation == .push {
