@@ -29,12 +29,23 @@ class ViewController: UIViewController {
     @IBOutlet var listView: UIScrollView!
     @IBOutlet var bgImage: UIImageView!
     var selectedImage: UIImageView?
+    let transition = PopAnimator()
     
     //MARK: UIViewController
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { context in
+            self.bgImage.alpha = size.width > size.height ? 0.25 : 0.55
+            self.positionListItems()
+        }, completion: nil)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        transition.dismissCompletion = {
+            self.selectedImage?.isHidden = false
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -107,6 +118,22 @@ class ViewController: UIViewController {
         //present details view controller
         let herbDetails = storyboard!.instantiateViewController(withIdentifier: "HerbDetailsViewController") as! HerbDetailsViewController
         herbDetails.herb = selectedHerb
+        herbDetails.transitioningDelegate = self
         present(herbDetails, animated: true, completion: nil)
+    }
+}
+
+extension ViewController: UIViewControllerTransitioningDelegate {
+    
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        transition.originFrame = selectedImage!.superview!.convert(selectedImage!.frame, to: nil)
+        transition.presenting = true
+        selectedImage?.isHidden = true
+        return transition
+    }
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        transition.presenting = false
+        return transition
     }
 }

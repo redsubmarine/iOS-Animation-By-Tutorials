@@ -14,6 +14,7 @@
 		9CC38A571A04DC6A00000B57 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9CC38A551A04DC6A00000B57 /* LaunchScreen.xib */; };
 		9CC38A7C1A04E68000000B57 /* HerbModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CC38A7B1A04E68000000B57 /* HerbModel.swift */; };
 		9CC38A821A0502F300000B57 /* HerbDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CC38A811A0502F300000B57 /* HerbDetailsViewController.swift */; };
+		9D60B3F6205E7EC0004FF1FD /* PopAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D60B3F5205E7EC0004FF1FD /* PopAnimator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		9CC38A561A04DC6A00000B57 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		9CC38A7B1A04E68000000B57 /* HerbModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HerbModel.swift; sourceTree = "<group>"; };
 		9CC38A811A0502F300000B57 /* HerbDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HerbDetailsViewController.swift; sourceTree = "<group>"; };
+		9D60B3F5205E7EC0004FF1FD /* PopAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopAnimator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 		9CC38A491A04DC6A00000B57 /* BeginnerCook */ = {
 			isa = PBXGroup;
 			children = (
+				9D60B3F5205E7EC0004FF1FD /* PopAnimator.swift */,
 				9CC38A4E1A04DC6A00000B57 /* ViewController.swift */,
 				9CC38A7B1A04E68000000B57 /* HerbModel.swift */,
 				9CC38A811A0502F300000B57 /* HerbDetailsViewController.swift */,
@@ -154,6 +157,7 @@
 				9CC38A4D1A04DC6A00000B57 /* AppDelegate.swift in Sources */,
 				9CC38A7C1A04E68000000B57 /* HerbModel.swift in Sources */,
 				9CC38A821A0502F300000B57 /* HerbDetailsViewController.swift in Sources */,
+				9D60B3F6205E7EC0004FF1FD /* PopAnimator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
