@@ -23,7 +23,7 @@
 import UIKit
 
 class IconCell: UICollectionViewCell {
-  @IBOutlet weak var name: UILabel!
-  @IBOutlet weak var icon: UIImageView!
-  
+    @IBOutlet weak var name: UILabel!
+    @IBOutlet weak var icon: UIImageView!
+    
 }
